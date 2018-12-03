@@ -1,5 +1,5 @@
 changes = []
-File.foreach('input2.txt') do |line|
+File.foreach('input.txt') do |line|
   changes << line.to_i
 end
 

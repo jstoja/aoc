@@ -16,7 +16,7 @@ def diff_1_letter(a, b)
   end
 end
 
-File.foreach('input2.txt') do |line|
+File.foreach('input.txt') do |line|
   n = line.chomp
   data << n
   data.each do |s|

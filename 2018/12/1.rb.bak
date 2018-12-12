@@ -1,0 +1,46 @@
+state = ''
+notes_with = []
+notes_without = []
+File.foreach('test1.txt') do |line|
+  vals = line.split(' ')
+  if state.empty?
+    state = vals[2]
+  else
+    notes_with << vals[0] if vals[2].eql? '#'
+    notes_without << vals[0] if vals[2].eql? '.'
+  end
+end
+
+class PotLine
+  def initialize(value)
+    @line = value
+    @position = 0
+  end
+
+  def evolve(notes_with, notes_without)
+  end
+
+  def evolve_pos(position)
+    if position
+  end
+end
+
+state = state
+GEN_MAX = 20
+(GEN_MAX + 1).times do |generation|
+  c = state.delete('.').length
+  puts "#{generation}:\t#{state}\t#{c}"
+  new_state = '.'*state.length
+  (state.length).times do |ii|
+    note = state[ii..ii+4]
+    if note.length < 5
+      note += '.'*(5 - note.length)
+    end
+    if notes_with.include?(note)
+      new_state[ii+3] = '#'
+    elsif notes_without.include?(note)
+      new_state[ii+3] = '.' 
+    end
+  end
+  state = new_state+'.'
+end

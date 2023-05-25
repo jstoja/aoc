@@ -1,0 +1,89 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
+#[derive(Debug)]
+struct File {
+    name: String,
+    size: u32,
+}
+
+#[derive(Debug)]
+struct Directory {
+    path: String,
+    files: Vec<File>,
+    directories: Vec<Rc<RefCell<Directory>>>,
+    parent: Option<Rc<RefCell<Directory>>>,
+}
+
+
+impl Directory {
+    fn new(path: String, parent: Option<Rc<RefCell<Directory>>>) -> Self {
+        Self {
+            path,
+            parent,
+            files: vec![],
+            directories: vec![],
+        }
+    }
+    fn size(&self) -> u32 {
+        let files_size = self.files.iter().fold(0, |acc, f| {
+            acc + f.size
+        });
+        // let dirs_size = self.directories.iter().fold(0, |acc, d| {
+        //     acc + d.borrow().size()
+        // });
+        files_size// + dirs_size
+    }
+
+    fn add_directory(&mut self, directory: Rc<RefCell<Directory>>) {
+        self.directories.push(directory);
+    }
+}
+
+fn pb1(lines: &str) -> u32 {
+    let root = Rc::new(RefCell::new(Directory::new("/".into(), None)));
+    let mut current_dir = Rc::clone(&root);
+    for line in lines.lines() {
+        if line.starts_with('$') {
+            let command: Vec<&str> = line.split(' ').skip(1).collect();
+            println!("COMMAND={:?}", command);
+            if command[0] == "cd" && command[1] != "/" {
+                // let found = current_dir.borrow().directories.iter().find(|d| {
+                //     d.borrow().path == command[1]
+                // });
+                // match found {
+                //     Some(d) => current_dir = Rc::clone(d),
+                //     None => todo!(),
+                // }
+            }
+            // else if command[0] == "ls" {
+
+            // }
+        } else if line.starts_with("dir") {
+            let dir_name: Vec<&str> = line.split(' ').skip(1).collect();
+            println!("DIRECTORY={:?}", dir_name);
+            // let new_dir = Rc::new(RefCell::new(Directory::new(dir_name[0].into(), Some(Rc::clone(&current_dir)))));
+            // current_dir.borrow_mut().add_directory(new_dir);
+        } else {
+            let file: Vec<&str> = line.split(' ').collect();
+            println!("FILE={:?}", file);
+            let name = file[0].into();
+            let size = file[0].parse::<u32>().unwrap();
+            current_dir.borrow_mut().files.push(File{name, size});
+        }
+    }
+    
+    println!("{:?}", root);
+    0
+}
+
+fn main() {
+    let lines = include_str!("input.txt");
+    println!("{}", pb1(lines));
+}
+
+#[test]
+fn test_pb1() {
+    let lines = include_str!("test.txt");
+    assert_eq!(95437, pb1(lines))
+}
